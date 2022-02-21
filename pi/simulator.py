@@ -77,13 +77,13 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
             print("4")
     
           # Check which direction
-          if event.direction == "middle":
-            sense.show_letter("")
-            print("Package loaded!")
-            pygame.mixer.music.load("../pygame-music/coin.wav")
-            pygame.mixer.music.play()
-            print("5")
-            break
+            if event.direction == "middle":
+                sense.show_letter("")
+                print("Package loaded!")
+                pygame.mixer.music.load("../pygame-music/coin.wav")
+                pygame.mixer.music.play()
+                print("5")
+                break
           # Wait a while and then clear the screen
           # sleep(0.5)
           # clear()
