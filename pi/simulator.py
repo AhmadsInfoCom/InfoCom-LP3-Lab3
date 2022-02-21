@@ -10,6 +10,7 @@ pygame.mixer.init()
 busy = (255,0,0)
 waiting = (255,255,0)
 idle = (0,255,0)
+confirm = (0,0,0)
 
 def getMovement(src, dst):
     speed = 0.00001
@@ -38,74 +39,67 @@ def send_location(SERVER_URL, id, drone_coords, status):
 def distance(_fr, _to):
     _dist = ((_to[0] - _fr[0])**2 + (_to[1] - _fr[1])**2)*10**6
     return _dist
-        
-def run(id, current_coords, from_coords, to_coords, SERVER_URL):
-    
-    pygame.mixer.music.load("../pygame-music/space-odyssey.mp3")
+
+def sound_n_light(sound, status):
+    pygame.mixer.music.load("../pygame-music/" + sound)
     pygame.mixer.music.play()
-    print("music played odyssey")
-    #while pygame.mixer.music.get_busy() == True:
-        #continue
-    print("out of while loop odyssey")
-    sense.clear(busy)
-    print("sense clear busy")
+    sense.clear(status)
+    if status==busy:
+        #while pygame.mixer.music.get_busy() == True:
+            #continue
+
+def buttonpress(situation):
+    #emulating a do-while loop because python doesn't have one...
+    while True:
+        event = sense.stick.wait_for_event()
+        if event.direction == "middle":
+            sound_n_light("coin.wav", confirm)
+            if situation="load":
+                print("Package loaded!")
+            elif sitation="delivery":
+                print("Package loaded!")
+            break
+    
+def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     
     drone_coords = current_coords
     
-    print("1")
-
+    #sound_n_light("space-odyssey.wav", busy)
+    print("Reminder: We need to fix so that the song plays continuously, it's super boring to fly without it")
+    
+    
+    
+    print("I'm going to the package warehouse now.")
     # Move from current_coodrs to from_coords
     d_long, d_la =  getMovement(drone_coords, from_coords)
     while distance(drone_coords, from_coords) > 0.0002:
         drone_coords = moveDrone(drone_coords, d_long, d_la)
         send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='busy')
         
-    print("2")
     
+    print("Waiting for you to load me with packages.")
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='waiting')
-    pygame.mixer.music.load("../pygame-music/doorbell-1.wav")
-    pygame.mixer.music.play()
-    print("Waiting for package loading.")
-    sense.clear(waiting)
-    
-    print("3")
-    
-    for event in sense.stick.get_events():
-    # Check if the joystick was pressed
-        if event.action == "pressed":
-            print("4")
-    
-          # Check which direction
-            if event.direction == "middle":
-                sense.show_letter("")
-                print("Package loaded!")
-                pygame.mixer.music.load("../pygame-music/coin.wav")
-                pygame.mixer.music.play()
-                print("5")
-                break
-          # Wait a while and then clear the screen
-          # sleep(0.5)
-          # clear()
-    
-    print("6")  
+    sound_n_light("doorbell-1.wav", waiting)
 
+    print("Press my button when you have successfully loaded the package.")
+    buttonpress("load")
+    
+    print("On my way to the recipient now.")
     # Move from from_coodrs to to_coords
     d_long, d_la =  getMovement(drone_coords, to_coords)
     while distance(drone_coords, to_coords) > 0.0002:
         drone_coords = moveDrone(drone_coords, d_long, d_la)
         send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='busy')
         
-    print("7")  
+    print("I'm here now!")
+    send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='waiting')
+    sound_n_light("doorbell.mp3", waiting)
+    
+    print("Press my button when you have received the package.")
+    buttonpress("delivery")
     
     # Stop and update status to database
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='idle')
-        
-    pygame.mixer.music.load("../pygame-music/doorbell.mp3")
-    pygame.mixer.music.play()
-    print("Package delivered")
-    sense.clear(waiting)
-    
-    print("8")
     
     return drone_coords[0], drone_coords[1]
    
@@ -129,13 +123,11 @@ if __name__ == "__main__":
     from_coords = (args.flong, args.flat)
     to_coords = (args.tlong, args.tlat)
     
-    pygame.mixer.music.load("../pygame-music/coin.wav")
-    pygame.mixer.music.play()
+    sound_n_light("coin.wav")
     print("Get New Task!")
-    print("Going to the package warehouse.")
 
     drone_long, drone_lat = run(args.id ,current_coords, from_coords, to_coords, SERVER_URL)
-    print("run")
+    print("runsssssssss")
     
     dronedest = open("dronedestination.txt", "w+")    #w/w+ kommer skriva över filen, medan r+ inte gör det och hade börjat skriva på toppen, och a/a+ hade inte skrivit över samt skrivit i slutet   #https://mkyong.com/python/python-difference-between-r-w-and-a-in-open/
     dronedest.writelines([str(drone_long), '\n', str(drone_lat)])   #värdena sparas i två rader
