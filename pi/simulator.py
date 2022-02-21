@@ -93,7 +93,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     d_long, d_la =  getMovement(drone_coords, to_coords)
     while distance(drone_coords, to_coords) > 0.0002:
         drone_coords = moveDrone(drone_coords, d_long, d_la)
-        send_location(id=id, drone_coords=drone_coords, status='busy')
+        send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='busy')
         
     print("7")  
     
