@@ -48,9 +48,8 @@ def sound_n_light(sound, status):
         #while pygame.mixer.music.get_busy() == True:
             #continue
 
-def buttonpress(situation):
-    #emulating a do-while loop because python doesn't have one...
-    while True:
+def buttonpress(situation): 
+    while True: #emulating a do-while loop because python doesn't have one...
         event = sense.stick.wait_for_event()
         if event.direction == "middle":
             sound_n_light("coin.wav", confirm)
