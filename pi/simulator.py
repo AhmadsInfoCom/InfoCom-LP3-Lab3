@@ -70,9 +70,8 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     
     print("3")
     
-    while True:
-      for event in sense.stick.get_events():
-        # Check if the joystick was pressed
+    for event in sense.stick.get_events():
+    # Check if the joystick was pressed
         if event.action == "pressed":
             print("4")
     
