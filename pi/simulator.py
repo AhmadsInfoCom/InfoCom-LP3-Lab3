@@ -54,9 +54,9 @@ def buttonpress(situation):
         event = sense.stick.wait_for_event()
         if event.direction == "middle":
             sound_n_light("coin.wav", confirm)
-            if situation="load":
+            if situation=="load":
                 print("Package loaded!")
-            elif sitation="delivery":
+            elif sitation=="delivery":
                 print("Package loaded!")
             break
     
