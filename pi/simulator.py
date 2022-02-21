@@ -74,7 +74,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
       for event in sense.stick.get_events():
         # Check if the joystick was pressed
         if event.action == "pressed":
-        print("4")
+            print("4")
     
           # Check which direction
           if event.direction == "middle":
