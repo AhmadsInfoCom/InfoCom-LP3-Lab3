@@ -47,7 +47,7 @@ def sound_n_light(sound, status):
         pygame.mixer.music.play()
     sense.clear(status)
     if status==confirm:
-        sleep(0.5)
+        sleep(1)
     if status==busy:
         #while pygame.mixer.music.get_busy() == True:
             #continue
@@ -101,6 +101,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     
     # Stop and update status to database
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='idle')
+    sound_n_light("", idle)
     
     return drone_coords[0], drone_coords[1]
    
