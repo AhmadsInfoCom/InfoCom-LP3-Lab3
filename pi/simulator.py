@@ -3,6 +3,7 @@ import requests
 import argparse
 import pygame
 from sense_hat import SenseHat
+from time import sleep
 
 sense = SenseHat()
 pygame.mixer.init()
@@ -10,7 +11,7 @@ pygame.mixer.init()
 busy = (255,0,0)
 waiting = (255,255,0)
 idle = (0,255,0)
-confirm = (0,0,0)
+confirm = (255,255,255)
 
 def getMovement(src, dst):
     speed = 0.00001
@@ -45,6 +46,8 @@ def sound_n_light(sound, status):
         pygame.mixer.music.load("../pygame-music/" + sound)
         pygame.mixer.music.play()
     sense.clear(status)
+    if status==confirm:
+        sleep(0.5)
     if status==busy:
         #while pygame.mixer.music.get_busy() == True:
             #continue
@@ -57,7 +60,7 @@ def buttonpress(situation):
             sound_n_light("coin.wav", confirm)
             if situation=="load":
                 print("Package loaded!")
-            elif sitation=="delivery":
+            elif situation=="delivery":
                 print("Package delivered!")
             break
     
