@@ -41,7 +41,7 @@ def distance(_fr, _to):
         
 def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     
-    pygame.mixer.music.load("space-odyssey.mp3")
+    pygame.mixer.music.load("../pygame-music/space-odyssey.mp3")
     pygame.mixer.music.play()
     while pygame.mixer.music.get_busy() == True:
         continue
@@ -56,7 +56,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
         send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='busy')
     
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='waiting')
-    pygame.mixer.music.load("doorbell-1.wav")
+    pygame.mixer.music.load("../pygame-music/doorbell-1.wav")
     pygame.mixer.music.play()
     print("Waiting for package loading.")
     sense.clear(waiting)
@@ -70,7 +70,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
           if event.direction == "middle":
             sense.show_letter("")
             print("Package loaded!")
-            pygame.mixer.music.load("coin.wav")
+            pygame.mixer.music.load("../pygame-music/coin.wav")
             pygame.mixer.music.play()
             break
           # Wait a while and then clear the screen
@@ -86,7 +86,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     # Stop and update status to database
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='idle')
         
-    pygame.mixer.music.load("doorbell.mp3")
+    pygame.mixer.music.load("../pygame-music/doorbell.mp3")
     pygame.mixer.music.play()
     print("Package delivered")
     sense.clear(waiting)
@@ -113,7 +113,7 @@ if __name__ == "__main__":
     from_coords = (args.flong, args.flat)
     to_coords = (args.tlong, args.tlat)
     
-    pygame.mixer.music.load("coin.wav")
+    pygame.mixer.music.load("../pygame-music/coin.wav")
     pygame.mixer.music.play()
     print("Get New Task!")
     print("Going to the package warehouse.")
