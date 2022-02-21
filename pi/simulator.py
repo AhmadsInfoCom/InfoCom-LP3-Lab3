@@ -43,17 +43,24 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     
     pygame.mixer.music.load("../pygame-music/space-odyssey.mp3")
     pygame.mixer.music.play()
+    print("music played odyssey")
     while pygame.mixer.music.get_busy() == True:
         continue
+    print("out of while loop odyssey")
     sense.clear(busy)
+    print("sense clear busy")
     
     drone_coords = current_coords
+    
+    print("1")
 
     # Move from current_coodrs to from_coords
     d_long, d_la =  getMovement(drone_coords, from_coords)
     while distance(drone_coords, from_coords) > 0.0002:
         drone_coords = moveDrone(drone_coords, d_long, d_la)
         send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='busy')
+        
+    print("2")
     
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='waiting')
     pygame.mixer.music.load("../pygame-music/doorbell-1.wav")
@@ -61,10 +68,13 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     print("Waiting for package loading.")
     sense.clear(waiting)
     
+    print("3")
+    
     while True:
       for event in sense.stick.get_events():
         # Check if the joystick was pressed
         if event.action == "pressed":
+        print("4")
     
           # Check which direction
           if event.direction == "middle":
@@ -72,16 +82,21 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
             print("Package loaded!")
             pygame.mixer.music.load("../pygame-music/coin.wav")
             pygame.mixer.music.play()
+            print("5")
             break
           # Wait a while and then clear the screen
           # sleep(0.5)
           # clear()
+    
+    print("6")  
 
     # Move from from_coodrs to to_coords
     d_long, d_la =  getMovement(drone_coords, to_coords)
     while distance(SERVER_URL, drone_coords, to_coords) > 0.0002:
         drone_coords = moveDrone(drone_coords, d_long, d_la)
         send_location(id=id, drone_coords=drone_coords, status='busy')
+        
+    print("7")  
     
     # Stop and update status to database
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='idle')
@@ -90,6 +105,8 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     pygame.mixer.music.play()
     print("Package delivered")
     sense.clear(waiting)
+    
+    print("8")
     
     return drone_coords[0], drone_coords[1]
    
@@ -119,6 +136,8 @@ if __name__ == "__main__":
     print("Going to the package warehouse.")
 
     drone_long, drone_lat = run(args.id ,current_coords, from_coords, to_coords, SERVER_URL)
+    print("run")
+    
     dronedest = open("dronedestination.txt", "w+")    #w/w+ kommer skriva över filen, medan r+ inte gör det och hade börjat skriva på toppen, och a/a+ hade inte skrivit över samt skrivit i slutet   #https://mkyong.com/python/python-difference-between-r-w-and-a-in-open/
     dronedest.writelines([str(drone_long), '\n', str(drone_lat)])   #värdena sparas i två rader
     dronedest.close()
