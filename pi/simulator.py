@@ -45,10 +45,11 @@ def sound_n_light(sound, status):
     pygame.mixer.music.play()
     sense.clear(status)
     if status==busy:
-        #while pygame.mixer.music.get_busy() == True:
-            #continue
+        pass
+    #while pygame.mixer.music.get_busy() == True:
+        #continue
 
-def buttonpress(situation): 
+def buttonpress(situation):
     while True: #emulating a do-while loop because python doesn't have one...
         event = sense.stick.wait_for_event()
         if event.direction == "middle":
