@@ -44,8 +44,8 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     pygame.mixer.music.load("../pygame-music/space-odyssey.mp3")
     pygame.mixer.music.play()
     print("music played odyssey")
-    while pygame.mixer.music.get_busy() == True:
-        continue
+    #while pygame.mixer.music.get_busy() == True:
+        #continue
     print("out of while loop odyssey")
     sense.clear(busy)
     print("sense clear busy")
