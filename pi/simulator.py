@@ -1,6 +1,15 @@
 import math
 import requests
 import argparse
+import pygame
+from sense_hat import SenseHat
+
+sense = SenseHat()
+pygame.mixer.init()
+
+busy = (255,0,0)
+waiting = (255,255,0)
+idle = (0,255,0)
 
 def getMovement(src, dst):
     speed = 0.00001
@@ -17,41 +26,77 @@ def moveDrone(src, d_long, d_la):
     y = y + d_la        
     return (x, y)
 
-def run(id, current_coords, from_coords, to_coords, SERVER_URL):
-    drone_coords = current_coords
-    d_long, d_la =  getMovement(drone_coords, from_coords)
-    while ((from_coords[0] - drone_coords[0])**2 + (from_coords[1] - drone_coords[1])**2)*10**6 > 0.0002:
-        drone_coords = moveDrone(drone_coords, d_long, d_la)
-        with requests.Session() as session:
-            drone_info = {'id': id,
-                          'longitude': drone_coords[0],
-                          'latitude': drone_coords[1],
-                          'status': 'busy'
-                         }
-            resp = session.post(SERVER_URL, json=drone_info)
-    d_long, d_la =  getMovement(drone_coords, to_coords)
-    while ((to_coords[0] - drone_coords[0])**2 + (to_coords[1] - drone_coords[1])**2)*10**6 > 0.0002:
-        drone_coords = moveDrone(drone_coords, d_long, d_la)
-        with requests.Session() as session:
-            drone_info = {'id': id,
-                          'longitude': drone_coords[0],
-                          'latitude': drone_coords[1],
-                          'status': 'busy'
-                        }
-            resp = session.post(SERVER_URL, json=drone_info)             
+def send_location(SERVER_URL, id, drone_coords, status):
     with requests.Session() as session:
-            drone_info = {'id': id,
-                          'longitude': drone_coords[0],
-                          'latitude': drone_coords[1],
-                          'status': 'idle'
-                         }
-            resp = session.post(SERVER_URL, json=drone_info)         
+        drone_info = {'id': id,
+                      'longitude': drone_coords[0],
+                      'latitude': drone_coords[1],
+                       'status': status
+                    }
+        resp = session.post(SERVER_URL, json=drone_info)
+
+def distance(_fr, _to):
+    _dist = ((_to[0] - _fr[0])**2 + (_to[1] - _fr[1])**2)*10**6
+    return _dist
+        
+def run(id, current_coords, from_coords, to_coords, SERVER_URL):
+    
+    pygame.mixer.music.load("space-odyssey.mp3")
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy() == True:
+        continue
+    sense.clear(busy)
+    
+    drone_coords = current_coords
+
+    # Move from current_coodrs to from_coords
+    d_long, d_la =  getMovement(drone_coords, from_coords)
+    while distance(drone_coords, from_coords) > 0.0002:
+        drone_coords = moveDrone(drone_coords, d_long, d_la)
+        send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='busy')
+    
+    send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='waiting')
+    pygame.mixer.music.load("doorbell-1.wav")
+    pygame.mixer.music.play()
+    print("Waiting for package loading.")
+    sense.clear(waiting)
+    
+    while True:
+      for event in sense.stick.get_events():
+        # Check if the joystick was pressed
+        if event.action == "pressed":
+    
+          # Check which direction
+          if event.direction == "middle":
+            sense.show_letter("")
+            print("Package loaded!")
+            pygame.mixer.music.load("coin.wav")
+            pygame.mixer.music.play()
+            break
+          # Wait a while and then clear the screen
+          # sleep(0.5)
+          # clear()
+
+    # Move from from_coodrs to to_coords
+    d_long, d_la =  getMovement(drone_coords, to_coords)
+    while distance(SERVER_URL, drone_coords, to_coords) > 0.0002:
+        drone_coords = moveDrone(drone_coords, d_long, d_la)
+        send_location(id=id, drone_coords=drone_coords, status='busy')
+    
+    # Stop and update status to database
+    send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='idle')
+        
+    pygame.mixer.music.load("doorbell.mp3")
+    pygame.mixer.music.play()
+    print("Package delivered")
+    sense.clear(waiting)
+    
     return drone_coords[0], drone_coords[1]
    
 if __name__ == "__main__":
     # Fill in the IP address of server, in order to location of the drone to the SERVER
     #===================================================================
-    SERVER_URL = "http://100.100.100.24:5001/drone"                                                 #ändrade denna från "http://SERVER_IP:PORT/drone" till vår server IP och porten som database ska köras på enligt READE-instruktionerna
+    SERVER_URL = "http://100.100.100.24:5001/drone" 
     #===================================================================
 
     parser = argparse.ArgumentParser()
@@ -67,7 +112,12 @@ if __name__ == "__main__":
     current_coords = (args.clong, args.clat)
     from_coords = (args.flong, args.flat)
     to_coords = (args.tlong, args.tlat)
-    print(current_coords, from_coords, to_coords)
+    
+    pygame.mixer.music.load("coin.wav")
+    pygame.mixer.music.play()
+    print("Get New Task!")
+    print("Going to the package warehouse.")
+
     drone_long, drone_lat = run(args.id ,current_coords, from_coords, to_coords, SERVER_URL)
     dronedest = open("dronedestination.txt", "w+")    #w/w+ kommer skriva över filen, medan r+ inte gör det och hade börjat skriva på toppen, och a/a+ hade inte skrivit över samt skrivit i slutet   #https://mkyong.com/python/python-difference-between-r-w-and-a-in-open/
     dronedest.writelines([str(drone_long), '\n', str(drone_lat)])   #värdena sparas i två rader
