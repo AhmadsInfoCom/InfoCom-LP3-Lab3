@@ -41,13 +41,14 @@ def distance(_fr, _to):
     return _dist
 
 def sound_n_light(sound, status):
-    pygame.mixer.music.load("../pygame-music/" + sound)
-    pygame.mixer.music.play()
+    if sound != "":
+        pygame.mixer.music.load("../pygame-music/" + sound)
+        pygame.mixer.music.play()
     sense.clear(status)
     if status==busy:
-        pass
-    #while pygame.mixer.music.get_busy() == True:
-        #continue
+        #while pygame.mixer.music.get_busy() == True:
+            #continue
+        pass #put this here in the mean time
 
 def buttonpress(situation):
     while True: #emulating a do-while loop because python doesn't have one...
@@ -57,25 +58,21 @@ def buttonpress(situation):
             if situation=="load":
                 print("Package loaded!")
             elif sitation=="delivery":
-                print("Package loaded!")
+                print("Package delivered!")
             break
     
 def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     
     drone_coords = current_coords
-    
+
+    print("I'm going to the package warehouse now.")
     #sound_n_light("space-odyssey.wav", busy)
     print("Reminder: We need to fix so that the song plays continuously, it's super boring to fly without it")
-    
-    
-    
-    print("I'm going to the package warehouse now.")
     # Move from current_coodrs to from_coords
     d_long, d_la =  getMovement(drone_coords, from_coords)
     while distance(drone_coords, from_coords) > 0.0002:
         drone_coords = moveDrone(drone_coords, d_long, d_la)
         send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='busy')
-        
     
     print("Waiting for you to load me with packages.")
     send_location(SERVER_URL, id=id, drone_coords=drone_coords, status='waiting')
@@ -85,6 +82,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     buttonpress("load")
     
     print("On my way to the recipient now.")
+    sound_n_light("", busy)
     # Move from from_coodrs to to_coords
     d_long, d_la =  getMovement(drone_coords, to_coords)
     while distance(drone_coords, to_coords) > 0.0002:
@@ -123,11 +121,10 @@ if __name__ == "__main__":
     from_coords = (args.flong, args.flat)
     to_coords = (args.tlong, args.tlat)
     
-    sound_n_light("coin.wav")
-    print("Get New Task!")
+    sound_n_light("coin.wav", confirm)
+    print("Sweet! A new task!")
 
     drone_long, drone_lat = run(args.id ,current_coords, from_coords, to_coords, SERVER_URL)
-    print("runsssssssss")
     
     dronedest = open("dronedestination.txt", "w+")    #w/w+ kommer skriva över filen, medan r+ inte gör det och hade börjat skriva på toppen, och a/a+ hade inte skrivit över samt skrivit i slutet   #https://mkyong.com/python/python-difference-between-r-w-and-a-in-open/
     dronedest.writelines([str(drone_long), '\n', str(drone_lat)])   #värdena sparas i två rader
