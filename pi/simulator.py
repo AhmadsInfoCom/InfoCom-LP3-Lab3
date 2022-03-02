@@ -13,6 +13,8 @@ waiting = (255,255,0)
 idle = (0,255,0)
 confirm = (255,255,255)
 
+sense.clear(idle)
+
 def getMovement(src, dst):
     speed = 0.00001
     dst_x, dst_y = dst
