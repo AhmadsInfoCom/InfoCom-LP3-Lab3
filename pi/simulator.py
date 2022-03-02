@@ -69,7 +69,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     drone_coords = current_coords
 
     print("I'm going to the package warehouse now.")
-    #sound_n_light("space-odyssey.wav", busy)
+    sound_n_light("space-odyssey.mp3", busy)
     print("Reminder: We need to fix so that the song plays continuously, it's super boring to fly without it")
     # Move from current_coodrs to from_coords
     d_long, d_la =  getMovement(drone_coords, from_coords)

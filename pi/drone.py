@@ -40,13 +40,6 @@ else:             #annars skriver vi in initial coordinates i filen
     dronedest.writelines([str(current_longitude),'\n', str(current_latitude)])     #https://stackoverflow.com/questions/13730107/writelines-writes-lines-without-newline-just-fills-the-file    #https://stackoverflow.com/questions/51980776/python-readline-with-custom-delimiter
 dronedest.close()
 
-'''
-dronedest = open("dronedestination.txt", "r")    #.txt?
-#linelist = dronedest.readlines()
-linelist = dronedest.read().splitlines() 
-print(linelist)
-dronedest.close()
-'''
 #===================================================================
 
 drone_info = {'id': myID,
