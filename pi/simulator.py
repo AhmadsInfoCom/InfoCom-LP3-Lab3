@@ -48,15 +48,11 @@ def sound_n_light(sound, status):
     sense.clear(status)
     if status==confirm:
         sleep(1)
-    if status==busy:
-        #while pygame.mixer.music.get_busy() == True:
-            #continue
-        pass #put this here in the mean time
 
 def buttonpress(situation):
     while True: #emulating a do-while loop because python doesn't have one...
-        event = sense.stick.wait_for_event()
-        if event.direction == "middle":
+        event = sense.stick.wait_for_event(emptybuffer=True)
+        if event.direction == "middle":   #probably still middle on second time, check actionpressed
             sound_n_light("coin.wav", confirm)
             if situation=="load":
                 print("Package loaded!")
@@ -85,7 +81,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
     buttonpress("load")
     
     print("On my way to the recipient now.")
-    sound_n_light("", busy)
+    sound_n_light("space-odyssey.mp3", busy)
     # Move from from_coodrs to to_coords
     d_long, d_la =  getMovement(drone_coords, to_coords)
     while distance(drone_coords, to_coords) > 0.0002:
