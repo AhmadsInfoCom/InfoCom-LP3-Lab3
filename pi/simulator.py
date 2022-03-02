@@ -70,7 +70,7 @@ def run(id, current_coords, from_coords, to_coords, SERVER_URL):
 
     print("I'm going to the package warehouse now.")
     sound_n_light("space-odyssey.mp3", busy)
-    print("Reminder: We need to fix so that the song plays continuously, it's super boring to fly without it")
+    
     # Move from current_coodrs to from_coords
     d_long, d_la =  getMovement(drone_coords, from_coords)
     while distance(drone_coords, from_coords) > 0.0002:
